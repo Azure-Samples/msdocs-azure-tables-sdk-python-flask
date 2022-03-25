@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Home page - Azure Tables Demo Applicaton</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename ='css/bootstrap.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename ='css/site.css') }}"/>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container">
+            <a class="navbar-brand" href="/">AzureTablesDemoApplication</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/?filter=true">Filter Results</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <main role="main" class="pb-3">
+
+        {% if args.filter == "true" %}
+            <!-- Filter Entity -->
+            <form method="get">
+                <input type="text" name="filter" value="true" hidden>
+                <div class="row g-3 mb-2 justify-content-center">
+                    <div class="col-md-3 fs-5 fw-bold border-bottom border-2">
+                        Column
+                    </div>
+                    <div class="col-md-6 fs-5 fw-bold border-bottom border-2">
+                        Criteria
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-2 justify-content-center">
+                    <div class="col-md-3 fw-bold">
+                        Station Name (Partition Key)
+                    </div>
+                    <div class="col-md-4 offset-md-2 text-end">
+                        <input type="text" id="partitionKeyFilter" name="partitionKey" class="form-control"
+                               placeholder="Station name" value="{{ args.partitionKey }}">
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-2 justify-content-center">
+                    <div class="col-md-3 fw-bold">
+                        Date (Row Key)
+                    </div>
+                    <div class="col-md-2">
+                        Min date/time:
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <input type="date" id="rowKeyDateStart" name="rowKeyDateStart" class="form-control"
+                               value="{{ args.rowKeyDateStart }}">
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <input type="time" id="rowKeyTimeStart" name="rowKeyTimeStart" class="form-control"
+                               value="{{ args.rowKeyTimeStart }}">
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-2 justify-content-center">
+                    <div class="col-md-2 offset-md-3">
+                        Max date/time:
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <input type="date" id="rowKeyDateEnd" name="rowKeyDateEnd" class="form-control"
+                               value="{{ args.rowKeyDateEnd }}">
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <input type="time" id="rowKeyTimeEnd" name="rowKeyTimeEnd" class="form-control"
+                               value="{{ args.rowKeyTimeEnd }}">
+                    </div>
+
+
+                </div>
+
+                <div class="row g-3 mb-2 justify-content-center">
+                    <div class="col-md-3 fw-bold">
+                        Temperature
+                    </div>
+                    <div class="col-md-2">
+                        Min temperature:
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <input type="text" id="minTemperature" name="minTemperature" class="form-control"
+                               placeholder="Min temperature" value="{{ args.minTemperature }}">
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-2 justify-content-center">
+                    <div class="col-md-2 offset-md-3">
+                        Max temperature:
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <input type="text" id="maxTemperature" name="maxTemperature" class="form-control"
+                               placeholder="Max temperature" value="{{ args.maxTemperature }}">
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-2 justify-content-center">
+                    <div class="col-md-3 fw-bold">
+                        Precipitation
+                    </div>
+                    <div class="col-md-2">
+                        Min precipitation:
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <input type="text" id="minPrecipitation" name="minPrecipitation" class="form-control"
+                               placeholder="Min precipitation" value="{{ args.minPrecipitation }}">
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-2 justify-content-center">
+                    <div class="col-md-2 offset-md-3">
+                        Max precipitation:
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <input type="text" id="maxPrecipitation" name="maxPrecipitation" class="form-control"
+                               placeholder="Max precipitation" value="{{ args.maxPrecipitation }}">
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-2 justify-content-center">
+                    <div class="col-md-4 offset-md-5 text-end">
+                        <button type="submit" class="btn btn-success">Filter data</button>
+                    </div>
+                </div>
+            </form>
+        {% else %}
+            <!-- Insert Entity -->
+            <div class="row justify-content-evenly">
+                <div class="col-auto">
+                    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#insertUsingTableEntity">
+                        Insert
+                        using Table Entity
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#insertUsingExpandedData">
+                        Insert using Expandable Data
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#insertSampleData">Insert
+                        Sample Data
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+        <hr/>
+        <!-- Entity List -->
+        <h3>Weather Data</h3>
+        <table class="table table-sm mb-1">
+            <thead>
+            <tr>
+                <th>StationName</th>
+                <th>ObservationDate</th>
+                {% for field_name in field_list %}
+                    <th>{{ field_name }}</th>
+                {% endfor %}
+                <th class="text-end">Actions</th>
+            </tr>
+            </thead>
+            {% for entity in entity_list %}
+                <tr>
+                    <td>{{ entity.StationName }}</td>
+                    <td>{{ entity.ObservationDate }}</td>
+                    {% for properties in entity.Properties %}
+                        <td>{{ properties.Value }}</td>
+                    {% endfor %}
+                    <td class="text-end">
+                        <button class="btn btn-primary btn-sm entity-update"
+                                data-table-entity='{{ entity | tojson }}'>
+                            Update
+                        </button>
+                        <form method="post" class="d-inline-block">
+                            <input type="hidden" name="StationName" value="{{ entity.StationName }}"/>
+                            <input type="hidden" name="ObservationDate" value="{{ entity.ObservationDate }}"/>
+                            <button class="btn btn-danger btn-sm" formaction="/api/entity?action=delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+
+        <!-- Insert with TableEntity Dialog -->
+        <div id="insertUsingTableEntity" class="modal fade" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <form method="post">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Insert using TableEntity</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="stationNameTableEntity" class="col-form-label">Station Name</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="stationNameTableEntity" name="StationName"
+                                           class="form-control" placeholder="Weather station name">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="observationDateTableEntity" class="col-form-label">Date/Time</label>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="date" id="observationDateTableEntity" name="ObservationDate"
+                                           class="form-control">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="time" id="observationTimeTableEntity" name="ObservationTime"
+                                           class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="temperatureTableEntity" class="col-form-label">Temperature</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="temperatureTableEntity" name="Temperature"
+                                           class="form-control" placeholder="Current temperature">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="humidityTableEntity" class="col-form-label">Humidity</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="humidityTableEntity" name="Humidity" class="form-control"
+                                           placeholder="% Humidity">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="barometerTableEntity" class="col-form-label">Barometer</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="barometerTableEntity" name="Barometer" class="form-control"
+                                           placeholder="Atmospheric pressure">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="windSpeedTableEntity" class="col-form-label">Wind Direction</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <select id="windDirectionTableEntity" name="WindDirection" class="form-control">
+                                        <option>CALM</option>
+                                        <option>N</option>
+                                        <option>NE</option>
+                                        <option>NW</option>
+                                        <option>E</option>
+                                        <option>W</option>
+                                        <option>SW</option>
+                                        <option>SE</option>
+                                        <option>S</option>
+                                        <option>VARIABLE</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="windSpeedTableEntity" class="col-form-label">Wind Speed</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="windSpeedTableEntity" name="WindSpeed" class="form-control"
+                                           placeholder="Wind speed">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="precipitationTableEntity" class="col-form-label">Precipitation</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="precipitationTableEntity" name="Precipitation"
+                                           class="form-control" placeholder="Precipitation">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" formaction="/api/entity?action=insert">
+                                Insert
+                            </button>
+                            <button type="submit" class="btn btn-primary" formaction="/api/entity?action=upsert">
+                                Upsert
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <!-- </form> -->
+            </div>
+        </div>
+
+
+        <!-- Insert Expandable Data Dialog -->
+        <div id="insertUsingExpandedData" class="modal fade" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <form method="post">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Insert using Custom Entity (implementing ITableEntity)</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="stationNameExpandable" class="col-form-label">Station Name</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="stationNameExpandable" name="StationName"
+                                           class="form-control" placeholder="Weather station name">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="observationDateExpandable" class="col-form-label">Date/Time</label>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="date" id="observationDateExpandable" name="ObservationDate"
+                                           class="form-control">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="time" id="observationTimeExpandable" name="ObservationTime"
+                                           class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="temperatureExpandable" class="col-form-label">Temperature</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="temperatureExpandable" name="Temperature"
+                                           class="form-control" placeholder="Current temperature">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="humidityExpandable" class="col-form-label">Humidity</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="humidityExpandable" name="Humidity" class="form-control"
+                                           placeholder="% Humidity">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="barometerExpandable" class="col-form-label">Barometer</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="barometerExpandable" name="Barometer" class="form-control"
+                                           placeholder="Atmospheric pressure">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="windSpeedExpandable" class="col-form-label">Wind Direction</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <select id="windDirectionExpandable" name="WindDirection" class="form-control">
+                                        <option>CALM</option>
+                                        <option>N</option>
+                                        <option>NE</option>
+                                        <option>NW</option>
+                                        <option>E</option>
+                                        <option>W</option>
+                                        <option>SW</option>
+                                        <option>SE</option>
+                                        <option>S</option>
+                                        <option>VARIABLE</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="windSpeedExpandable" class="col-form-label">Wind Speed</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="windSpeedExpandable" name="WindSpeed" class="form-control"
+                                           placeholder="Wind speed">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="precipitationExpandable" class="col-form-label">Precipitation</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="precipitationExpandable" name="Precipitation"
+                                           class="form-control" placeholder="Precipitation">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="cloudCoverExpandable" class="col-form-label">Cloud Cover</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="cloudCoverExpandable" name="CloudCover" class="form-control"
+                                           placeholder="Percent Cloud Cover">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="uvIndexExpandable" class="col-form-label">UV Index</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="uvIndexExpandable" name="UvIndex" class="form-control"
+                                           placeholder="UV Index">
+                                </div>
+                            </div>
+
+                            <div id="addCustomFieldDiv" class="row g-3 align-self-end">
+                                <div class="col-sm-4">
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                            data-bs-target="#customFieldModel">Add Custom Field
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" formaction="/api/entity?action=insertCustom">
+                                Insert
+                            </button>
+                            <button type="submit" class="btn btn-primary" formaction="/api/entity?action=upsetCustom">
+                                Upsert
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <!-- </form> -->
+            </div>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="customFieldModel" tabindex="-2" aria-labelledby="customFieldModelLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="customFieldModelLabel">Add custom field</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="row g-3 mb-2">
+                            <div class="col-sm-6">
+                                <label for="customFieldName" class="col-form-label">Custom field name</label>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" id="customFieldName" name="FieldName" class="form-control"
+                                       placeholder="Name">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button id="customFieldButton" type="button" class="btn btn-primary" data-bs-dismiss="modal">Add
+                            field
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Bulk Insert Dialog -->
+        <div id="insertSampleData" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form method="post">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Insert sample data</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="bulkDataUnits" class="col-form-label">Units</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <select id="bulkDataUnits" name="Units" class="form-control">
+                                        <option>Metric</option>
+                                        <option>US</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-2">
+                                <div class="col-sm-4">
+                                    <label for="sampleDataCity" class="col-form-label">City</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <select id="sampleDataCity" name="City" class="form-control">
+                                        <option>Anchorage</option>
+                                        <option>Chicago</option>
+                                        <option>Miami</option>
+                                        <option>Phoenix</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary"
+                                    formaction="/api/entity?action=insertSampleData">
+                                Insert
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <!-- </form> -->
+            </div>
+        </div>
+
+
+        <!-- Update Entity Modal -->
+        <div class="modal fade" id="updateEntityModel" tabindex="-2" aria-labelledby="updateEntityLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <form method="post">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="updateEntityLabel">Update entity</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div id="updateEntityDiv" class="modal-body">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button id="updateEntityButton" type="submit" class="btn btn-primary"
+                                    formaction="/api/entity?action=update">Update Entity
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                >
+            </div>
+        </div>
+
+
+    </main>
+</div>
+
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; 2021 - AzureTablesDemoApplication - Privacy
+    </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+<script src="{{ url_for('static', filename='js/handlebars-v4.7.7.js') }}"></script>
+
+{% raw %}
+<!-- The handlebars.js template for the row the custom field will go into-->
+<script id="custom-field-template" type="text/x-handlebars-template">
+    <div id="{{ fieldName }}Div" class="row g-3 mb-2">
+        <div class="col-sm-4">
+            <label for="{{ fieldName }}Expandable" class="col-form-label">{{ fieldText }}</label>
+        </div>
+        <div class="col-sm-7">
+            <input type="text" id="{{ fieldName }}Expandable" name="{{ fieldName }}" class="form-control"
+                   placeholder="{{ fieldText }} value">
+        </div>
+        <div class="col-sm-1 text-end">
+            <button id="{{ fieldName }}Remove" class="btn btn-danger"
+                    onclick="this.parentElement.parentElement.remove();return false">X
+            </button>
+        </div>
+    </div>
+</script>
+
+
+<!-- The handlebars.js template for updating an entity-->
+<script id="entity-update-template" type="text/x-handlebars-template">
+    <div class="row g-3 mb-2">
+        <div class="col-sm-4">
+            <label for="PartitionKeyUpdate" class="col-form-label">Partition Key</label>
+        </div>
+        <div class="col-sm-8">
+            <input type="text" id="PartitionKeyUpdate" name="StationName" class="form-control" value="{{ StationName }}"
+                   readonly="readonly">
+        </div>
+    </div>
+    <div class="row g-3 mb-2">
+        <div class="col-sm-4">
+            <label for="RowKeyUpdate" class="col-form-label">Row Key</label>
+        </div>
+        <div class="col-sm-8">
+            <input type="text" id="RowKeyUpdate" name="ObservationDate" class="form-control"
+                   value="{{ ObservationDate }}"
+                   readonly="readonly">
+        </div>
+    </div>
+    <hr/>
+
+    {{#each Properties}}
+    <div class="row g-3 mb-2">
+        <div class="col-sm-4">
+            <label for="{{ this.PropertyName }}Update" class="col-form-label">{{ this.PropertyName }}</label>
+        </div>
+        <div class="col-sm-8">
+            <input type="text" id="{{ this.PropertyName }}Update" name="{{ this.PropertyName }}" class="form-control"
+                   value="{{ this.Value }}">
+        </div>
+    </div>
+    {{/each}}
+
+</script>
+<script>
+    $(document).ready(function () {
+        var templateBase = $('#custom-field-template').html();
+        var customFieldTemplate = Handlebars.compile(templateBase);
+
+        $("#customFieldButton").on('click', function () {
+            var text = $("#customFieldName").val();
+            var fieldName = text.replace(/ /g, '');
+
+            var data = {"fieldName": fieldName, "fieldText": text};
+            var html = customFieldTemplate(data);
+
+            $("#addCustomFieldDiv").before(html);
+
+        });
+
+
+        // For Entity Updates
+        var updateEntityModel = new bootstrap.Modal(document.getElementById('updateEntityModel'));
+        var entityUpdateBase = $('#entity-update-template').html();
+        var entityUpdateTemplate = Handlebars.compile(entityUpdateBase);
+
+        $(".entity-update").on('click', function (event) {
+            var entity = $(event.target).data("table-entity");
+            var html = entityUpdateTemplate(entity);
+            $("#updateEntityDiv").html(html);
+            updateEntityModel.show();
+        });
+
+    });
+
+</script>
+{% endraw %}
+</body>
+</html>
