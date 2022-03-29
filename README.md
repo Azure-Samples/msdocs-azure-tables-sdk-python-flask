@@ -1,10 +1,10 @@
-# Azure-Data-Tables sample application
+# Azure Data Tables sample application
 
-This is the sample project for using tha [Azure-Data-Tables SDK](https://pypi.org/project/azure-data-tables/) library with the Azure Cosmos DB Table API.  The quickstart for this application is located at [https://docs.microsoft.com/en-us/azure/cosmos-db/table/create-table-python](https://docs.microsoft.com/en-us/azure/cosmos-db/table/how-to-use-python).
+This is the sample project for using tha [Azure-Data-Tables SDK](https://pypi.org/project/azure-data-tables/) library with the Azure Cosmos DB Table API.  The quickstart for this application is located at [https://docs.microsoft.com/azure/cosmos-db/table/create-table-python](https://docs.microsoft.com/azure/cosmos-db/table/how-to-use-python).
 
 ## Features
 
-This project demonstrates how to access the Cosmos DB Table API from a python application using the Azure.Data.Tables package in the Azure SDK.  The Cosmos DB Table API is a schemaless NoSQL data store used to store tabular data.  Each row in an Azure Cosmos DB table has a partition key and row key which together form a unique key for the row.  All other properties (columns) of the row are dynamically added when objects are stored in the table.  In this way, there is no need to specify the properties (columns) of a table ahead of time as they are automatically added as needed.  If an object is loaded to the table that has new properties, the corresponding properties on the table will created automatically.
+This project demonstrates how to access the Storage Table or Cosmos DB Table API from a python application using the azure-data-tables package in the Azure SDK.  The Storage Table and Cosmos DB Table API are a schemaless NoSQL data store used to store tabular data.  Each row in the Storage Table and Cosmos DB table have a partition key and row key which together form a unique key for the row.  All other properties (columns) of the row are dynamically added when objects are stored in the table.  In this way, there is no need to specify the properties (columns) of a table ahead of time as they are automatically added as needed.  If an object is loaded to the table that has new properties, the corresponding properties on the table will created automatically.
 
 This sample application is based around storing weather data.  A base set of properties (temperature, humidity, pressure, wind direction, and wind speed) are stored for each observation loaded to a table.  However, the GUI can be used to create and store weather observations with additional properties (cloud cover, UV index, air quality index, etc) to demonstrate how the Table API automatically adds properties to a table as needed.  The ability to automatically extend a table in this way is useful for any application where the data sent to the application may dynamically change at any time.
 
@@ -12,14 +12,14 @@ This sample application is based around storing weather data.  A base set of pro
 
 ### Prerequisites
 
-- An [Azure account](https://docs.microsoft.com/en-us/dotnet/azure/create-azure-account)
+- An [Azure account](https://docs.microsoft.com/dotnet/azure/create-azure-account)
 - [Python3.6+](https://www.python.org/downloads/)
 - [VS Code](https://code.visualstudio.com/)
 
 ### Quickstart
 
 This repository contains three subdirectories.
-- *starter app* - A starter version of the application without any Azure code.  Intended to be used when following the Quickstart at [https://docs.microsoft.com/en-us/azure/cosmos-db/table/create-table-python](https://docs.microsoft.com/en-us/azure/cosmos-db/table/how-to-use-python).
+- *starter app* - A starter version of the application without any Azure code.  Intended to be used when following the Quickstart at [https://docs.microsoft.com/azure/cosmos-db/table/create-table-python](https://docs.microsoft.com/azure/cosmos-db/table/how-to-use-python).
 - *completed app* - A completed version of the app for those who want to see the finished code or debug through a fully working application.
 - *scripts* - Azure CLI and Azure PowerShell scripts to create the Azure resources needed to run this sample.
 
@@ -34,7 +34,15 @@ The fastest way to get started is to run the completed application.  For the app
     table_name = "WeatherData"
     project_root_path = "Project abs path"
     ```
-4. Run the application by executing the following command.
+4. Recommend that you use a [virtual environment](https://docs.python.org/3/tutorial/venv.html) to run this example, but it's not required. Install and initialize the virtual environment with the "venv" module on Python 3:
+    ```
+    python3 -m venv mytestenv # Might be "python" or "py -3.6" denpending on your python installation
+    cd mytestenv
+    source bin/activate      # Linux shell (Bash, ZSH, etc.) only
+    ./scripts/activate       # PowerShell only
+    ./scripts/activate.bat   # Windows CMD only
+    ```
+5. Run the application by executing the following command.
     ```
     pip3 install -r requirements.txt
     python3 run.py webapp
@@ -42,4 +50,4 @@ The fastest way to get started is to run the completed application.  For the app
 
 ## Resources
 
-- [Azure.Data.Tables Reference Documentation](https://docs.microsoft.com/en-us/python/api/overview/azure/data-tables-readme?view=azure-python)
+- [Azure.Data.Tables Reference Documentation](https://docs.microsoft.com/python/api/overview/azure/data-tables-readme?view=azure-python)

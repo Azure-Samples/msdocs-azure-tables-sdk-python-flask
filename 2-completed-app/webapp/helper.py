@@ -1,3 +1,8 @@
+# -------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+# --------------------------------------------------------------------------
+
 import json
 import os
 
@@ -13,12 +18,8 @@ class TableServiceHelper:
     def __init__(self, table_name=None, conn_str=None):
         self.table_name = table_name if table_name else os.getenv("table_name")
         self.conn_str = conn_str if conn_str else os.getenv("conn_str")
-
-    @property
-    def table_client(self):
-        table_service = TableServiceClient.from_connection_string(self.conn_str)
-        table_client = table_service.get_table_client(self.table_name)
-        return table_client
+        self.table_service = TableServiceClient.from_connection_string(self.conn_str)
+        self.table_client = self.table_service.get_table_client(self.table_name)
 
     def query_entity(self, params):
         filters = []
@@ -76,7 +77,7 @@ class TableServiceHelper:
                     "WindSpeed": round(w["WindSpeed"] * 1.609, 2) if unit == "US" else w["WindSpeed"],
                     "Precipitation": round(w["Precipitation"] * 25.4, 2) if unit == "US" else w["Precipitation"]
                 }
-                batch_insert_entity_operations.append(("create", entity))
+                batch_insert_entity_operations.append(("upsert", entity))
         self.submit_transaction(batch_insert_entity_operations)
 
     @staticmethod
