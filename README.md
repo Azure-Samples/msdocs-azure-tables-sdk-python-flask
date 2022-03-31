@@ -25,7 +25,7 @@ This repository contains three subdirectories.
 
 The fastest way to get started is to run the completed application.  For the application to work, you still need provision the appropriate Azure resources and use the appropriate connection string in the sample application.
 
-1. Clone or download the sample application from https://github.com/Azure-Samples/msdocs-azure-tables-sdk-python.git
+1. Clone or download the sample application from https://github.com/Azure-Samples/msdocs-azure-tables-sdk-python-flask.git
 2. Use either the Azure CLI or Azure PowerShell script in the scripts directory to create the appropriate Azure resources.  If you do not have Azure CLI or Azure PowerShell installed, you may run either of these scripts in the [Azure Cloud Shell](https://shell.azure.com).
 3. Each script will return the appropriate connection string for the sample application to use.  Switch to folder `1-strater-app` or `2-completed-app`. Then, add the value of the corresponding environment variables in `.env` file.
     ```
